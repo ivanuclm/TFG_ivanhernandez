@@ -6,10 +6,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from PIL import Image
 import api.auth as auth
 from train_model import CustomTransformer
 import ast
+import json
 
 # @st.cache(allow_output_mutation=True)
 def load_pipelines():
@@ -27,7 +27,7 @@ def main():
     xgb_pipeline, xgb_pipeline_basic = load_pipelines()
 
     prediction = False
-
+    prediction_basic = False
     # side bar and title
 
 
@@ -96,6 +96,7 @@ def main():
                 # Predict the song's popularity
                 # input_features_processed_search = preprocessing.transform(input_features_search)
                 prediction = xgb_pipeline.predict(input_features_search)[0]
+                prediction_basic = xgb_pipeline_basic.predict(input_features_search)[0]
                 # st.progress(prediction/100)
                 # st.success(f'Predicción de popularidad: {prediction:.2f}')
                 # Print all the features
@@ -107,10 +108,14 @@ def main():
     st.write('---')
 
     if prediction:
+        if st.button('Limpiar predicción'):
+            prediction = False
         st.header('Resultados')
         st.markdown(f"""<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/{id}" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>""", unsafe_allow_html=True)
         st.success(f'Predicción de popularidad: {prediction:.2f}')
         st.progress(prediction/100)
+        st.error(f'Predicción de popularidad (básica): {prediction_basic:.2f}')
+        st.progress(prediction_basic/100)
 
         # st.write('---')
 
@@ -119,9 +124,6 @@ def main():
         with col1:          
             st.write('#### Información de la canción')
             st.write(f"**{title}** - {artist}")
-            
-            col11, col12 = st.columns(2)
-
             
             st.write(f"**Álbum:** {album}")
             st.write(f"**Duración:** {duration_ms/60000:.0f} minutos  y {duration_ms%60000/1000:.0f} segundos")
@@ -146,82 +148,80 @@ def main():
             st.write(f"**Tempo:** {tempo:.2f}")
             st.write(f"**Compás:** {time_signature}")
     else:
-        st.write('Aún no se ha realizado ninguna predicción.')
-
+        st.write('Busca una canción o presiona el botón de abajo para predecir la popularidad de una canción con los valores que elijas.')
         
-    # main_genres = ['Pop', 'Rock', 'Hip Hop', 'Indie', 'Country', 'Metal', 'Classical', 'Jazz', 'R&B', 'Reggae', 'Latin', 'Electronic', 'OST']
+        user_id = 'cualquiera'
+        user_title = 'cualquiera'
+        user_artist = 'cualquiera'
+        user_artist_id = 'cualquiera'
+        user_album = 'cualquiera'
+        user_album_total_tracks = 'cualquiera'
+        user_disc_number = 'cualquiera'
+        user_track_number = 'cualquiera'
+        col3, col4 = st.columns(2)
 
-    # duration_s = st.sidebar.slider('Duración (s)', 0, 600, 1)
-    # months_elapsed = st.sidebar.slider('Meses desde el lanzamiento de la canción', 0, 48, 1)
+        with col3:
+            user_release_date = st.date_input('Fecha de lanzamiento', value=pd.to_datetime('today'))
+            user_explicit_value = st.selectbox('Lenguaje malsonante', ('Sí', 'No'))
+            user_tonalidad = st.selectbox('Tonalidad', ('Do m', 'Do# m', 'Re m', 'Re# m', 'Mi m', 'Fa m', 'Fa# m', 'Sol m', 'Sol# m', 'La m', 'La# m', 'Si m', 'Do M', 'Do# M', 'Re M', 'Re# M', 'Mi M', 'Fa M', 'Fa# M', 'Sol M', 'Sol# M', 'La M', 'La# M', 'Si M'))
+            user_time_signature = st.selectbox('Compás', ('3/4', '4/4', '5/4'))
 
-    # explicit = st.sidebar.selectbox('Contiene lenguaje malsonante', ('Sí', 'No'))
-    # acousticness = st.sidebar.slider('Acousticness', 0.0, 1.0, 0.01)
-    # danceability = st.sidebar.slider('Danceability', 0.0, 1.0, 0.01)
-    # energy = st.sidebar.slider('Energy', 0.0, 1.0, 0.01)
-    # instrumentalness = st.sidebar.slider('Instrumentalness', 0.0, 1.0, 0.01)
-    # liveness = st.sidebar.slider('Liveness', 0.0, 1.0, 0.01)
-    # loudness = st.sidebar.slider('Loudness', -60.0, 4.0, 0.1)
-    # speechiness = st.sidebar.slider('Speechiness', 0.0, 1.0, 0.01)
-    # key = st.sidebar.selectbox('Tono', ('Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si'))
-    # mode = st.sidebar.selectbox('Modo', ('Mayor', 'menor'))
-    # valence = st.sidebar.slider('Valence', 0.0, 1.0, 0.01)
-    # tempo = st.sidebar.slider('Tempo', 0.0, 250.0, 0.01)
-    # time_signature = st.sidebar.selectbox('Compás', ('3/4', '4/4', '5/4'))
+            user_artist_genres_input = st.text_input('Géneros del artista (separados por comas)', value='rock, punk, alternative')
+            user_duration_s = st.slider('Duración (segundos)', 0, 600, 1)
+            user_artist_followers = st.slider("Seguidores del artista", 0, 100000000, 1000)
+            user_lastfm_listeners = st.slider("Escuchas en Last.fm", 0, 1000000, 1)
+            user_lastfm_playcounts = st.slider("Reproducciones en Last.fm", 0, 1000000, 1)
 
-    # artist_followers = st.sidebar.slider("Seguidores del artista", 0, 1000000000, 1000)
-    # playcounts_per_listener = st.sidebar.slider("Escuchas en Last.fm por oyente", 0, 1500, 1) 
-    # genre = st.sidebar.selectbox('Género del artista', ('Pop', 'Rock', 'Hip Hop', 'Indie', 'Country', 'Metal', 'Classical', 'Jazz', 'R&B', 'Reggae', 'Latin', 'Electronic', 'OST', 'Otros'))
+        with col4:
+            # Get audio features
+            user_acousticness = st.slider('Acousticness', 0.0, 1.0, 0.01)
+            user_danceability = st.slider('Danceability', 0.0, 1.0, 0.01)
+            user_energy = st.slider('Energy', 0.0, 1.0, 0.01)
+            user_instrumentalness = st.slider('Instrumentalness', 0.0, 1.0, 0.01)
+            user_liveness = st.slider('Liveness', 0.0, 1.0, 0.01)
+            user_loudness = st.slider('Loudness', -60.0, 4.0, 0.1)
+            user_speechiness = st.slider('Speechiness', 0.0, 1.0, 0.01)
+            user_valence = st.slider('Valence', 0.0, 1.0, 0.01)
 
-    
+            user_tempo = st.slider('Tempo', 0, 250, 1)
 
-    # # assign value to is_pop_or_rap feature
-    # if genre in ['Pop', 'Hip Hop/Rap']:
-    #     pop_or_rap = 1
-    # else:
-    #     pop_or_rap = 0
+        user_explicit = 0 if user_explicit_value == 'No' else 1
 
-    # if genre in ['Rock', 'Metal']:
-    #     rock_or_metal = 1
-    # else:
-    #     rock_or_metal = 0
+        user_duration_ms = user_duration_s * 1000
 
-    # if genre in ['Latin']:
-    #     latin = 1
-    # else:
-    #     latin = 0
+        user_key_name = user_tonalidad.split(' ')[0]
+        user_mode_name = user_tonalidad.split(' ')[1]
+        user_key_dict = {'Do': 0, 'Do#': 1, 'Re': 2, 'Re#': 3, 'Mi': 4, 'Fa': 5, 'Fa#': 6, 'Sol': 7, 'Sol#': 8, 'La': 9, 'La#': 10, 'Si': 11}
+        user_key = user_key_dict[user_key_name]
+        user_mode_dict = {'m': 0, 'M': 1}
+        user_mode = user_mode_dict[user_mode_name]
 
-    # if(explicit == 'Sí'):
-    #     explicit = 1
-    # else:
-    #     explicit = 0
-    
-    # key_dict = {'Do': 0, 'Do#': 1, 'Re': 2, 'Re#': 3, 'Mi': 4, 'Fa': 5, 'Fa#': 6, 'Sol': 7, 'Sol#': 8, 'La': 9, 'La#': 10, 'Si': 11}
-    # key_value = key_dict[key]
-    # mode_dict = {'Mayor': 1, 'menor': 0}
-    # mode_value = mode_dict[mode]
+        user_genres_list = [genre.strip() for genre in user_artist_genres_input.split(',')]
+        user_artist_genres = json.dumps(user_genres_list)
 
-    # #key_mode_value positive if major, negative if minor. this needs key to change from 0-11 to 1-12, and then add the mode value
-    # key_value_for_keymode = key_value + 1
-    # # feng['key_mode'] + (feng['mode'] == 0) * -2 * feng['key_mode']
-    # key_mode_value = key_value_for_keymode + (mode_value == 0) * -2 * key_value_for_keymode
-    
+        aux1, aux2, aux3 = st.columns([1,2,1])
 
+        with aux2:  # Use the middle column for the button
+        
+            if st.button('Predecir popularidad de canción personalizada'):
+                user_predictors = ['id', 'title', 'artist', 'artist_id', 'album', 'album_total_tracks', 'disc_number', 'track_number', 'release_date', 'duration_ms', 'explicit', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'key', 'mode', 'tempo', 'time_signature',  'speechiness', 'valence', 'artist_genres', 'artist_followers', 'lastfm_listeners', 'lastfm_playcounts']
+                
+                user_input_features = pd.DataFrame(columns=user_predictors)
+                user_input_features.loc[0] = [user_id, user_title, user_artist, user_artist_id, user_album, user_album_total_tracks, user_disc_number, user_track_number, user_release_date, user_duration_ms, user_explicit, user_acousticness, user_danceability, user_energy, user_instrumentalness, user_liveness, user_loudness, user_key, user_mode, user_tempo, user_time_signature, user_speechiness, user_valence, user_artist_genres, user_artist_followers, user_lastfm_listeners, user_lastfm_playcounts]
+                
+                # Predict the song's popularity
+                # input_features_processed_search = preprocessing.transform(input_features_search)
+                user_prediction = xgb_pipeline.predict(user_input_features)[0]
+                user_prediction_basic = xgb_pipeline_basic.predict(user_input_features)[0]
+                # st.progress(prediction/100)
+                # st.success(f'Predicción de popularidad: {prediction:.2f}')
+                # Print all the features
+                # st.header('Resultados de la predicción personalizada')
+                st.success(f'Predicción personalizada: {user_prediction:.2f}')
+                st.progress(user_prediction/100)
+                st.error(f'Predicción personalizada (básica): {user_prediction_basic:.2f}')
+                st.progress(user_prediction_basic/100)
 
-    # # create input matrix with user response
-    # input_features = pd.DataFrame(columns=predictors)
-
-    # input_features.loc[0] = [artist_followers, lastfm_listeners, lastfm_playcounts, track_number, album_total_tracks, disc_number, duration_s, months_elapsed, explicit, acousticness, danceability, energy, instrumentalness, liveness, loudness, speechiness, valence, key_value, mode_value, key_mode_value, tempo, time_signature, pop_or_rap, rock_or_metal, latin]
-
-    # # create button that generates prediction
-    # if st.sidebar.button('Predicción COMPLETA'):
-    #     input_features_processed = preprocessing.transform(input_features)
-    #     prediction = model.predict(input_features_processed)[0]
-    #     st.sidebar.success(f'Predicción de popularidad para los valores escogidos: ***{prediction:.2f}***')
-
-    # if st.sidebar.button('Predicción BÁSICA (sin seguidores)'):
-    #     input_features_processed = preprocessing.transform(input_features)
-    #     prediction = model.predict(input_features_processed)[0]
-    #     st.sidebar.success(f'Predicción de popularidad para los valores escogidos: ***{prediction:.2f}***')
 
 # Add a search bar for finding songs on Spotify
 
