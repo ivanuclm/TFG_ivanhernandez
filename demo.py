@@ -104,7 +104,8 @@ def main():
             st.sidebar.write('---')
 
     st.header('Predicción de popularidad de canciones')
-    st.write('Busca una canción en el cuadro de búsqueda de la barra lateral y presiona Enter para ver las opciones. Luego, presiona el botón para predecir la popularidad de la canción escogida.')
+    st.write('Busca una canción en el cuadro de búsqueda de la barra lateral y presiona Enter para ver las opciones.')
+    st.write('Cuando hayas decidido cuál predecir, presiona el botón de abajo de la canción para ver los resultados.')
     st.write('---')
 
     if prediction:
@@ -148,7 +149,7 @@ def main():
             st.write(f"**Tempo:** {tempo:.2f}")
             st.write(f"**Compás:** {time_signature}")
     else:
-        st.write('Busca una canción o presiona el botón de abajo para predecir la popularidad de una canción con los valores que elijas.')
+        st.write('Si lo deseas, puedes introducir manualmente las características de una canción para predecir su popularidad.')
         
         user_id = 'cualquiera'
         user_title = 'cualquiera'
