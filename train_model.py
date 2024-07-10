@@ -1,10 +1,8 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import xgboost
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.compose import ColumnTransformer
@@ -12,12 +10,9 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import pickle
 import warnings
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-import matplotlib.pyplot as plt 
 import ast
-import shap
 from sklearn.preprocessing import FunctionTransformer
 import datetime as dt
-import time
 import os
 
 warnings.filterwarnings(action='ignore')
