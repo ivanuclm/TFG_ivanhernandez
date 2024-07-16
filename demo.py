@@ -177,7 +177,7 @@ def main():
             user_artist_genres_input = st.text_input('Géneros del artista (separados por comas)', value='rock, punk, alternative')
             user_duration_s = st.slider('Duración (segundos)', 0, 600, 1)
             user_artist_followers = st.slider("Seguidores del artista", 0, 100000000, 1000)
-            user_lastfm_listeners = st.slider("Escuchas en Last.fm", 0, 1000000, 1)
+            user_lastfm_listeners = st.slider("Oyentes en Last.fm", 0, 1000000, 1)
             user_lastfm_playcounts = st.slider("Reproducciones en Last.fm", 0, 1000000, 1)
 
         with col4:
@@ -187,11 +187,11 @@ def main():
             user_energy = st.slider('Energy', 0.0, 1.0, 0.01)
             user_instrumentalness = st.slider('Instrumentalness', 0.0, 1.0, 0.01)
             user_liveness = st.slider('Liveness', 0.0, 1.0, 0.01)
-            user_loudness = st.slider('Loudness', -60.0, 4.0, 0.1)
+            user_loudness = st.slider('Loudness (dB)', -60.0, 4.0, 0.1)
             user_speechiness = st.slider('Speechiness', 0.0, 1.0, 0.01)
             user_valence = st.slider('Valence', 0.0, 1.0, 0.01)
 
-            user_tempo = st.slider('Tempo', 0, 250, 1)
+            user_tempo = st.slider('Tempo (bpm)', 0, 250, 1)
 
         user_explicit = 0 if user_explicit_value == 'No' else 1
 
