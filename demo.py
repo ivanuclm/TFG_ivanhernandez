@@ -127,13 +127,15 @@ def main():
             st.write(f"**{title}** - {artist}")
             
             st.write(f"**Álbum:** {album}")
+            st.write("---")
             st.write(f"**Duración:** {duration_ms/60000:.0f} minutos  y {duration_ms%60000/1000:.0f} segundos")
-            st.write(f"**Lanzamiento:** {release_date}")
+            release_date_spanish = pd.to_datetime(release_date).strftime('%d de %B de %Y')
+            st.write(f"**Lanzamiento:** {release_date_spanish}")
             st.write(f"**Explícita:** {'Sí' if explicit else 'No'}")
             st.write(f"**Géneros del artista:** {artist_genres if artist_genres else 'No disponible'}")
             st.write("---")
             st.write(f"**Seguidores del artista:** {artist_followers}")
-            st.write(f"**Escuchas en Last.fm:** {lastfm_listeners}")
+            st.write(f"**Oyentes en Last.fm:** {lastfm_listeners}")
             st.write(f"**Reproducciones en Last.fm:** {lastfm_playcounts}")
 
         with col2:
@@ -143,13 +145,16 @@ def main():
             st.write(f"**Energy:** {energy:.2f}")
             st.write(f"**Instrumentalness:** {instrumentalness:.2f}")
             st.write(f"**Liveness:** {liveness:.2f}")
-            st.write(f"**Loudness:** {loudness:.2f}")
+            st.write(f"**Loudness:** {loudness:.2f} dB")
             st.write(f"**Speechiness:** {speechiness:.2f}")
             st.write(f"**Valence:** {valence:.2f}")
-            st.write(f"**Key:** {key}")
-            st.write(f"**Mode:** {mode}")
-            st.write(f"**Tempo:** {tempo:.2f}")
-            st.write(f"**Compás:** {time_signature}")
+            key_dict = {0: 'Do', 1: 'Do#', 2: 'Re', 3: 'Re#', 4: 'Mi', 5: 'Fa', 6: 'Fa#', 7: 'Sol', 8: 'Sol#', 9: 'La', 10: 'La#', 11: 'Si'}
+            st.write(f"**Key:** {key_dict[key]}")
+            mode_dict = {0: 'menor', 1: 'Mayor'}
+            st.write(f"**Mode:** {mode_dict[mode]}")
+            st.write(f"**Tempo:** {tempo:.2f} bpm")
+            time_signature_dict = {0: 'No disponible', 1:'Otro', 3: '3/4', 4: '4/4', 5: '5/4'}
+            st.write(f"**Compás:** {time_signature_dict[time_signature]}")
     else:
         st.write('Si lo deseas, puedes introducir manualmente las características de una canción para predecir su popularidad.')
         
