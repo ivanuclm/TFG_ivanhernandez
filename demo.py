@@ -113,9 +113,9 @@ def main():
             prediction = False
         st.header('Resultados')
         st.markdown(f"""<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/{id}" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>""", unsafe_allow_html=True)
-        st.success(f'Predicción de popularidad:\n (MAE = 7.358) # {prediction:.2f}')
+        st.success(f'Predicción de popularidad: \n (MAE = 7.358) \n # {prediction:.2f}')
         st.progress(prediction/100)
-        st.error(f'Predicción de popularidad (básica):\n (MAE = 12.032) # {prediction_basic:.2f}')
+        st.error(f'Predicción de popularidad (básica):\n (MAE = 12.032) \n # {prediction_basic:.2f}')
         st.progress(prediction_basic/100)
 
         # st.write('---')
